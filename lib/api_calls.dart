@@ -65,7 +65,20 @@ class ApiService {
     );
     return _handleResponse(response);
   }
+  static Future<dynamic> patch(String url, Map<String, dynamic> body) async {
+    final response = await http.patch(
+      Uri.parse(baseUrl+url),
+      headers: await _headers(),
+      body: jsonEncode(body),
+    );
 
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+          "API Error ${response.statusCode}: ${response.body}");
+    }
+  }
   // PUT request
   static Future<dynamic> put(String endpoint, Map<String, dynamic> body) async {
     final response = await http.put(

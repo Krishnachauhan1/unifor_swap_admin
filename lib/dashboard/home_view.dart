@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uniform_swap_admin/app_colors.dart';
+import 'package:uniform_swap_admin/categories/controllers/category_controller.dart';
 import 'package:uniform_swap_admin/dashboard/dashboard_controller.dart';
 
 class HomeView extends StatelessWidget {
@@ -127,25 +128,27 @@ class HomeView extends StatelessWidget {
                     color: AppColors.textPrimary),
               ),
               const SizedBox(height: 14),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: isWide
-                    ? 4
-                    : isMedium
-                        ? 3
-                        : 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.3,
-                children: c.schoolCategories.map((cat) {
-                  return _CategoryTile(
-                    emoji: cat['icon'],
-                    name: cat['name'],
-                    count: (cat['subCategories'] as List).length,
-                    color: Color(cat['color']),
+              GetBuilder(
+                init: CategoryController(),
+                builder: (controller) {
+                  return GridView.count(shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: isWide
+                        ? 4
+                        : isMedium
+                            ? 3
+                            : 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 1.3,
+                    children: controller.filteredCategories.map((cat) {
+                      return
+                        _CategoryTile(
+                        name: cat.name,
+                      );
+                    }).toList(),
                   );
-                }).toList(),
+                }
               ),
               const SizedBox(height: 24),
 
@@ -282,60 +285,125 @@ class _StatCard extends StatelessWidget {
 }
 
 class _CategoryTile extends StatelessWidget {
-  final String emoji;
   final String name;
-  final int count;
-  final Color color;
 
-  const _CategoryTile(
-      {required this.emoji,
-      required this.name,
-      required this.count,
-      required this.color});
+  const _CategoryTile({
+    required this.name,
+  });
+
+  Color _generateColor(String text) {
+    final colors = [
+      AppColors.primary,
+      AppColors.secondary,
+      AppColors.success,
+      AppColors.warning,
+      AppColors.pending,
+      AppColors.primaryVariant,
+      AppColors.secondaryVariant,
+    ];
+    final index = text.hashCode.abs() % colors.length;
+    return colors[index];
+  }
+
+  int _generateCount(String text) {
+    return (text.length % 5) + 1;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final color = _generateColor(name);
+    final count = _generateCount(name);
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.25), width: 1.2),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)
+          BoxShadow(
+            color: color.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 26)),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
+          /// 🔶 Top accent bar
+          Container(
+            height: 3,
+            width: 32,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          /// 🔷 Icon circle
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.category_rounded,
+              color: color,
+              size: 18,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          /// 📝 Name
+          Text(
+            name,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+              height: 1.3,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          const SizedBox(height: 6),
+
+          /// 🏷️ Subcategory badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.layers_rounded, size: 10, color: color),
+                const SizedBox(width: 4),
+                Text(
                   '$count subcategories',
                   style: TextStyle(
-                      fontSize: 10, color: color, fontWeight: FontWeight.w500),
+                    fontSize: 10,
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

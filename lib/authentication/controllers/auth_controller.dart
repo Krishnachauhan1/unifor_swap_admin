@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uniform_swap_admin/api_calls.dart';
 import 'package:uniform_swap_admin/apis.dart';
+import 'package:uniform_swap_admin/app_colors.dart';
 import 'package:uniform_swap_admin/dashboard/dashboard_view.dart';
 import 'package:uniform_swap_admin/products/views/add_product_view.dart';
 
 class AuthController extends GetxController {
   var isLoading = false.obs;
-  final emailCtrl = TextEditingController();
-  final passwordCtrl = TextEditingController();
+  final emailCtrl = TextEditingController(text: 'krishan@gmail.com');
+  final passwordCtrl = TextEditingController(text: '123456');
 
   @override
   void onClose() {

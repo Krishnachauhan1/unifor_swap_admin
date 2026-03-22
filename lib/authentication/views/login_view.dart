@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uniform_swap_admin/app_colors.dart';
 import 'package:uniform_swap_admin/products/views/add_product_view.dart';
 import '../controllers/auth_controller.dart';
 
@@ -162,16 +163,16 @@ class LoginView extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 12),
 
-                                  // Demo Login Button
-                                  TextButton(
-                                    onPressed: ctrl.demoLogin,
-                                    child: const Text(
-                                      'Demo Login (No Credentials)',
-                                      style: TextStyle(
-                                        color: AppColors.secondary,
-                                      ),
-                                    ),
-                                  ),
+                                  // // Demo Login Button
+                                  // TextButton(
+                                  //   onPressed: ctrl.demoLogin,
+                                  //   child: const Text(
+                                  //     'Demo Login (No Credentials)',
+                                  //     style: TextStyle(
+                                  //       color: AppColors.secondary,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               )),
                         const SizedBox(height: 16),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uniform_swap_admin/advertisement/advertisement_screen.dart';
 import 'package:uniform_swap_admin/app_colors.dart';
 import 'package:uniform_swap_admin/authentication/controllers/auth_controller.dart';
 import 'package:uniform_swap_admin/categories/views/categories_view.dart';
@@ -38,13 +39,18 @@ class _DashboardViewState extends State<DashboardView> {
         icon: Icons.school_outlined,
         selectedIcon: Icons.school,
         label: 'Schools'),
+    _NavItem(
+        icon: Icons.campaign_outlined,
+        selectedIcon: Icons.campaign,
+        label: 'Advertisement'),
   ];
 
   List<Widget> get _pages => [
         const HomeView(),
-        const ProductListView(),
+         ProductsScreen(),
         const CategoriesView(),
         const SchoolsView(),
+        const AdvertisementScreen(),
       ];
 
   @override

@@ -20,7 +20,7 @@ class DashboardView extends StatelessWidget {
     final pages = [
       const HomeView(),
       const CategoryView(),
-      const ProductListView(),
+       ProductsScreen(),
     ];
 
     final navItems = [

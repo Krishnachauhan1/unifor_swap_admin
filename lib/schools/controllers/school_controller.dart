@@ -13,7 +13,7 @@ class SchoolController extends GetxController {
   // ✅ Clean getter — no bugs
   List<SchoolModel> get filteredSchools {
     if (searchQuery.value.isEmpty)
-      return schools.toList(); // ✅ .toList() zaroori
+      return schools.toList();
     final q = searchQuery.value.toLowerCase();
     return schools
         .where((s) =>
@@ -43,13 +43,9 @@ class SchoolController extends GetxController {
       if (res != null && res['data'] != null) {
         schools.value =
             (res['data'] as List).map((e) => SchoolModel.fromJson(e)).toList();
-      } else {
-        // ✅ API aaya lekin data nahi — mock load karo
-        schools.value = _mockSchools();
       }
     } catch (e) {
-      // ✅ Exception pe bhi mock load karo
-      schools.value = _mockSchools();
+
     } finally {
       isLoading.value = false;
     }
@@ -87,44 +83,7 @@ class SchoolController extends GetxController {
         snackPosition: SnackPosition.BOTTOM);
   }
 
-  List<SchoolModel> _mockSchools() => [
-        SchoolModel(
-            id: 1,
-            name: 'Delhi Public School - R.K. Puram',
-            address: 'New Delhi, 110022',
-            phone: '011-26170839',
-            email: 'dps@example.com'),
-        SchoolModel(
-            id: 2,
-            name: 'Ryan International School',
-            address: 'Noida, UP',
-            phone: '0120-4567890',
-            email: 'ryan@example.com'),
-        SchoolModel(
-            id: 3,
-            name: 'KV Sangathan - Sector 8',
-            address: 'Dwarka, New Delhi',
-            phone: '011-28035678',
-            email: 'kv@example.com'),
-        SchoolModel(
-            id: 4,
-            name: 'Amity International School',
-            address: 'Saket, New Delhi',
-            phone: '011-41888999',
-            email: 'amity@example.com'),
-        SchoolModel(
-            id: 5,
-            name: "St. Columba's School",
-            address: 'Ashok Place, New Delhi',
-            phone: '011-23364041',
-            email: 'stcolumba@example.com'),
-        SchoolModel(
-            id: 6,
-            name: 'Modern School',
-            address: 'Barakhamba Road, New Delhi',
-            phone: '011-23325684',
-            email: 'modern@example.com'),
-      ];
+
 
   @override
   void onClose() {
