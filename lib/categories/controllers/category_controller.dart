@@ -88,17 +88,17 @@ class CategoryController extends GetxController {
     update();
   }
 
-  void deleteCategory(int id) {
-    categories.removeWhere((c) => c.id == id);
-
+  Future<void> deleteCategory(int id) async {
+    final res= await ApiService.delete('$categoriesApi/$id');
+    print(res);
     Get.snackbar(
-      'Deleted',
-      'Category removed',
-      backgroundColor: const Color(0xFFB00020),
+      res['status'] ? 'Successfully Deleted' : 'Error',
+      res['message'],
+      backgroundColor: res['status'] ? Colors.green : Color(0xFFB00020),
       colorText: Colors.white,
       snackPosition: SnackPosition.BOTTOM,
     );
-
+    getCategories();
     update();
   }
 
