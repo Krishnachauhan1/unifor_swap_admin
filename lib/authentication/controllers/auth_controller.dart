@@ -55,7 +55,8 @@ class AuthController extends GetxController {
       if (res['success'] == true || res['token'] != null) {
         // Extract token and userId from response
         final token = res['token'] ?? res['data']?['token'] ?? '';
-        final userId = res['data']?['id']?.toString() ??
+        final userId =
+            res['data']?['id']?.toString() ??
             res['user']?['id']?.toString() ??
             '1';
 
