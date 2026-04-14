@@ -1,8 +1,10 @@
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:uniform_swap_admin/api_calls.dart';
+import 'package:uniform_swap_admin/app_colors.dart';
 
 class AdvertisementController extends GetxController {
   bool isLoading = false;
@@ -99,5 +101,124 @@ class AdvertisementController extends GetxController {
       loading();
       update();
     }
+  }
+
+  void openAddDialog() {
+    Get.dialog(
+      Dialog(
+        child: Container(
+          width: 500,
+          padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const Text(
+                  "Add Advertisement",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+
+                /// IMAGE
+                GestureDetector(
+                  onTap: () async {
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(type: FileType.image);
+                    if (result != null) {
+                      imageBytes = result.files.first.bytes;
+                      update();
+                    }
+                  },
+                  child: Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(border: Border.all()),
+                    child: imageBytes == null
+                        ? const Center(child: Text("Upload Image"))
+                        : Image.memory(imageBytes!, fit: BoxFit.cover),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// START DATE
+                TextField(
+                  controller: startDateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Start Date",
+                  ),
+                  onTap: () async {
+                    DateTime? picked = await showDatePicker(
+                      context: Get.context!,
+                      firstDate: DateTime(2024),
+                      lastDate: DateTime(2030),
+                      initialDate: DateTime.now(),
+                    );
+                    if (picked != null) {
+                      startDateController.text = picked.toString().split(
+                        " ",
+                      )[0];
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 15),
+
+                /// END DATE
+                TextField(
+                  controller: endDateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "End Date",
+                  ),
+                  onTap: () async {
+                    DateTime? picked = await showDatePicker(
+                      context: Get.context!,
+                      firstDate: DateTime(2024),
+                      lastDate: DateTime(2030),
+                      initialDate: DateTime.now(),
+                    );
+                    if (picked != null) {
+                      endDateController.text = picked.toString().split(" ")[0];
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 15),
+
+                /// URL
+                TextField(
+                  controller: urlController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Enter URL",
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                /// SUBMIT
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      addAdvertisement();
+                      Get.back();
+                    },
+                    child: const Text("Submit"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
