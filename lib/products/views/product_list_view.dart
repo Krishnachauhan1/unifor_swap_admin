@@ -7,6 +7,8 @@ import 'package:uniform_swap_admin/products/controllers/product_controller.dart'
 import 'package:uniform_swap_admin/products/models/product_model.dart';
 
 class ProductsScreen extends StatelessWidget {
+  const ProductsScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +29,11 @@ class ProductsScreen extends StatelessWidget {
               : GridView.builder(
             padding: const EdgeInsets.all(20),
             itemCount: ctrl.products.length,
-            gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 250, // 👈 card max width
               mainAxisSpacing: 20,
               crossAxisSpacing: 20,
-              childAspectRatio: 1.85,
+              childAspectRatio: 0.75, // 👈 adjust height ratio
             ),
             itemBuilder: (context, index) {
               final product = ctrl.products[index];
@@ -45,118 +46,135 @@ class ProductsScreen extends StatelessWidget {
   }
 
   Widget _productCard(ProductModel product, ProductController ctrl) {
-    final imageUrl = product.images.isNotEmpty ? imageBaseUrl + product.images.first : null;
+    final imageUrl = product.images.isNotEmpty
+        ? imageBaseUrl + product.images.first
+        : null;
 
-    return GestureDetector(
-      onTap: () => _openProductDialog(product, ctrl),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
 
-            /// IMAGE
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(14)),
-              child: imageUrl != null
-                  ? Image.network(
-                imageUrl,
-                height: 120,
-                width: double.infinity,
-                fit: BoxFit.cover,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWeb = constraints.maxWidth > 300; // adaptive check
 
-                /// 🔥 SHOW LOADING
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 120,
-                    color: Colors.grey.shade200,
-                    child: const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  );
-                },
+        return GestureDetector(
+          onTap: () => _openProductDialog(product, ctrl),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(isWeb ? 16 : 12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: isWeb ? 12 : 8,
+                  offset: const Offset(0, 4),
+                )
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-                /// 🔥 SHOW PLACEHOLDER ON ERROR
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 120,
-                    color: Colors.grey.shade200,
-                    child: const Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        size: 40,
-                        color: Colors.grey,
+                /// IMAGE
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(isWeb ? 16 : 12),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: isWeb ? 1.6 : 1.2, // responsive ratio
+                    child: imageUrl != null
+                        ? Image.network(
+                      imageUrl,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+
+                      /// loading
+                      loadingBuilder:
+                          (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      },
+
+                      /// error
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                        : Container(
+                      color: Colors.grey.shade200,
+                      child: const Center(
+                        child: Icon(Icons.image, size: 40),
                       ),
                     ),
-                  );
-                },
-              )
-                  : Container(
-                height: 120,
-                color: Colors.grey.shade200,
-                child: const Center(
-                  child: Icon(Icons.image, size: 40),
+                  ),
                 ),
-              ),
+
+                Padding(
+                  padding: EdgeInsets.all(isWeb ? 14 : 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      /// TITLE
+                      Text(
+                        product.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: isWeb ? 14 : 12,
+                        ),
+                      ),
+
+                      SizedBox(height: isWeb ? 8 : 6),
+
+                      /// PRICE
+                      Text(
+                        "₹ ${product.price}",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: isWeb ? 13 : 11,
+                        ),
+                      ),
+
+                      SizedBox(height: isWeb ? 8 : 6),
+
+                      /// SCHOOL
+                      Text(
+                        product.schoolName ?? "",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: isWeb ? 12 : 10,
+                          color: Colors.grey,
+                        ),
+                      ),
+
+                      SizedBox(height: isWeb ? 8 : 6),
+
+                      /// STATUS
+                      _statusBadge(product),
+                    ],
+                  ),
+                )
+              ],
             ),
-
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  /// TITLE
-                  Text(
-                    product.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  /// PRICE
-                  Text(
-                    "₹ ${product.price}",
-                    style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  /// SCHOOL
-                  Text(
-                    product.schoolName ?? "",
-                    style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  /// STATUS BADGE
-                  _statusBadge(product),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -191,7 +209,8 @@ class ProductsScreen extends StatelessWidget {
   void _openProductDialog(ProductModel product, ProductController ctrl) {
     final PageController pageController = PageController();
 
-
+    print(imageBaseUrl+product.images.first);
+    print(product.name);
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(
@@ -219,8 +238,7 @@ class ProductsScreen extends StatelessWidget {
                               setState(() {});
                             },
                             itemBuilder: (context, index) {
-                              final imageUrl =
-                                  imageBaseUrl + product.images[index];
+                              final imageUrl = imageBaseUrl + product.images[index];
 
                               return ClipRRect(
                                 borderRadius:
@@ -244,6 +262,7 @@ class ProductsScreen extends StatelessWidget {
                                   /// ERROR PLACEHOLDER
                                   errorBuilder:
                                       (context, error, stackTrace) {
+                                        print("IMAGE ERROR: $error");
                                     return Container(
                                       color: Colors.grey.shade200,
                                       child: const Center(

@@ -1,5 +1,5 @@
-final String baseUrl = 'https://uniformswap.nextlogicsolution.id/api/';
-const String imageBaseUrl = "https://uniformswap.nextlogicsolution.id/storage/";
+final String baseUrl = 'https://uniformswap.in/api/';
+const String imageBaseUrl = "https://uniformswap.in/storage/";
 
 // Auth APIs
 const String loginApi = 'login';

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:uniform_swap_admin/api_calls.dart';
+import 'package:uniform_swap_admin/apis.dart';
 
 class AdvertisementController extends GetxController {
 
@@ -34,6 +35,18 @@ class AdvertisementController extends GetxController {
 
     print(advertisements);
   }
+
+  Future<void> deleteAdvertisement(String id) async {
+    final res = await ApiService.get('ads/$id/delete');
+
+    if (res['success'] == true) {
+      getAdvertisements();
+      update();
+    }
+
+    print(res);
+  }
+
   Future<void> addAdvertisement() async {
     loading();
     if (imageBytes == null) {
@@ -50,7 +63,7 @@ class AdvertisementController extends GetxController {
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("https://uniformswap.nextlogicsolution.id/api/ads"),
+        Uri.parse("$baseUrl/ads"),
       );
 
       final token = await ApiService.getToken();

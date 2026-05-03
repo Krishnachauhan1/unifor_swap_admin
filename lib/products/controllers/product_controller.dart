@@ -20,7 +20,7 @@ class ProductController extends GetxController {
       update(); // 🔥 refresh UI
 
       final res = await ApiService.get(schoolItemsApi);
-      print(res['data'][0]);
+      print('product list $res');
 
       if (res['success'] == true) {
         final List list = res['data'];
@@ -44,12 +44,15 @@ class ProductController extends GetxController {
           "school-items/$id/approve",
           {'is_approved':true}
       );
+      print('error is $res');
+
 
       if (res['success'] == true) {
         products.removeWhere((p) => p.id == id);
         Get.snackbar("Success", "Product Approved");
       }
     } catch (e) {
+      print('error is $e');
       print("Approve Error: $e");
     } finally {
       isLoading = false;
