@@ -12,3 +12,5 @@ const String schoolItemsApi = "all-school-items";
 const String categoriesApi = "categories";
 const String productsApi = "products";
 const String ordersApi = "orders";
+const String instructionsApi = 'instructions';
+const String allInstructionsApi = 'all-instructions';

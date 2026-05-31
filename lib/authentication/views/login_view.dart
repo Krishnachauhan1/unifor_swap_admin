@@ -21,7 +21,7 @@ class LoginView extends StatelessWidget {
                 colors: [
                   Color(0xFFFF6D00),
                   Color(0xFFFF9800),
-                  Color(0xFF009688)
+                  Color(0xFF009688),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -62,7 +62,7 @@ class LoginView extends StatelessWidget {
                                 color: AppColors.primary.withOpacity(0.4),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
-                              )
+                              ),
                             ],
                           ),
                           child: const Icon(
@@ -130,51 +130,54 @@ class LoginView extends StatelessWidget {
                         const SizedBox(height: 28),
 
                         // Login Button with Loading
-                        Obx(() => ctrl.isLoading.value
-                            ? const CircularProgressIndicator(
-                                color: AppColors.primary,
-                              )
-                            : Column(
-                                children: [
-                                  // Login Button
-                                  SizedBox(
-                                    width: double.infinity,
-                                    height: 52,
-                                    child: ElevatedButton(
-                                      onPressed: ctrl.login,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primary,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(14),
+                        Obx(
+                          () => ctrl.isLoading.value
+                              ? const CircularProgressIndicator(
+                                  color: AppColors.primary,
+                                )
+                              : Column(
+                                  children: [
+                                    // Login Button
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 52,
+                                      child: ElevatedButton(
+                                        onPressed: ctrl.login,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColors.primary,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
+                                          ),
+                                          elevation: 4,
                                         ),
-                                        elevation: 4,
-                                      ),
-                                      child: const Text(
-                                        'LOGIN',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.2,
-                                          color: Colors.white,
+                                        child: const Text(
+                                          'LOGIN',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.2,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 12),
+                                    const SizedBox(height: 12),
 
-                                  // // Demo Login Button
-                                  // TextButton(
-                                  //   onPressed: ctrl.demoLogin,
-                                  //   child: const Text(
-                                  //     'Demo Login (No Credentials)',
-                                  //     style: TextStyle(
-                                  //       color: AppColors.secondary,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              )),
+                                    // // Demo Login Button
+                                    // TextButton(
+                                    //   onPressed: ctrl.demoLogin,
+                                    //   child: const Text(
+                                    //     'Demo Login (No Credentials)',
+                                    //     style: TextStyle(
+                                    //       color: AppColors.secondary,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                        ),
                         const SizedBox(height: 16),
 
                         // Version
@@ -184,8 +187,9 @@ class LoginView extends StatelessWidget {
                               child: Divider(color: Colors.grey.shade300),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
                               child: Text(
                                 'v1.0.0',
                                 style: TextStyle(

@@ -20,7 +20,7 @@ class ProductController extends GetxController {
       update(); // 🔥 refresh UI
 
       final res = await ApiService.get(schoolItemsApi);
-      print('product list $res');
+      // print('product list $res');
 
       if (res['success'] == true) {
         final List list = res['data'];

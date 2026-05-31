@@ -8,7 +8,7 @@ import 'package:uniform_swap_admin/products/views/add_product_view.dart';
 
 class AuthController extends GetxController {
   var isLoading = false.obs;
-  final emailCtrl = TextEditingController(text: 'krishan@gmail.com');
+  final emailCtrl = TextEditingController(text: 'admin@admin.com');
   final passwordCtrl = TextEditingController(text: '123456');
 
   @override

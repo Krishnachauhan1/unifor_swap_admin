@@ -49,8 +49,8 @@ class ProductsScreen extends StatelessWidget {
     final imageUrl = product.images.isNotEmpty
         ? imageBaseUrl + product.images.first
         : null;
-
-
+    print(imageUrl);
+    print(product.name);
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWeb = constraints.maxWidth > 300; // adaptive check
@@ -209,8 +209,8 @@ class ProductsScreen extends StatelessWidget {
   void _openProductDialog(ProductModel product, ProductController ctrl) {
     final PageController pageController = PageController();
 
-    print(imageBaseUrl+product.images.first);
-    print(product.name);
+    // print(imageBaseUrl+product.images.first);
+    // print(product.name);
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(
