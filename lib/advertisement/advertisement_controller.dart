@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:uniform_swap_admin/api_calls.dart';
-import 'package:uniform_swap_admin/apis.dart';
-
 class AdvertisementController extends GetxController {
 
   bool isLoading=false;
+  final Set<String> deletingAdIds = <String>{};
   Uint8List? imageBytes;
   List advertisements = [];
   TextEditingController startDateController = TextEditingController();
@@ -26,7 +25,7 @@ class AdvertisementController extends GetxController {
     super.onInit();
   }
   Future<void> getAdvertisements() async {
-    final res = await ApiService.get('ads');
+    final res = await ApiService.get('all-ads');
 
     if (res['success'] == true) {
       advertisements = res['data'];
@@ -37,20 +36,31 @@ class AdvertisementController extends GetxController {
   }
 
   Future<void> deleteAdvertisement(String id) async {
-    final res = await ApiService.get('ads/$id/delete');
+    if (deletingAdIds.contains(id)) return;
+    deletingAdIds.add(id);
+    update();
+    try {
+      final res = await ApiService.patch('ads/$id/delete', {});
 
-    if (res['success'] == true) {
-      getAdvertisements();
+      if (res['success'] == true) {
+        await getAdvertisements();
+        Get.snackbar('Success', res['message'] ?? 'Advertisement deleted');
+      } else {
+        Get.snackbar('Error', res['message'] ?? 'Delete failed');
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      deletingAdIds.remove(id);
       update();
     }
-
-    print(res);
   }
 
   Future<void> addAdvertisement() async {
     loading();
     if (imageBytes == null) {
       Get.snackbar("Error", "Please upload image");
+      loading();
       return;
     }
 
@@ -60,47 +70,42 @@ class AdvertisementController extends GetxController {
     // }
 
     try {
-
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse("$baseUrl/ads"),
+      final res = await ApiService.postMultipart(
+        'ads',
+        fields: {
+          'title': 'Advertisement',
+          'description': urlController.text.trim().isNotEmpty
+              ? urlController.text.trim()
+              : 'Advertisement',
+          if (urlController.text.trim().isNotEmpty)
+            'url': urlController.text.trim(),
+          'start_date': startDateController.text.trim(),
+          'end_date': endDateController.text.trim(),
+        },
+        files: [
+          http.MultipartFile.fromBytes(
+            'image',
+            imageBytes!,
+            filename: 'ad_image.png',
+            contentType: MediaType('image', 'png'),
+          ),
+        ],
       );
 
-      final token = await ApiService.getToken();
-
-      request.headers['Authorization'] = "Bearer $token";
-
-      request.fields['title'] = "Advertisement";
-      request.fields['description'] = urlController.text;
-      request.fields['price'] = "0";
-      request.fields['location'] = "Delhi";
-      request.fields['start_date'] = startDateController.text;
-      request.fields['end_date'] = endDateController.text;
-
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'image',
-          imageBytes!,
-          filename: "ad_image.png",
-        ),
-      );
-
-      var response = await request.send();
-      String responseBody = await response.stream.bytesToString();
-
-      print("Status Code: ${response.statusCode}");
-      print("Response Body: $responseBody");
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.snackbar("Success", "Advertisement Added");
+      if (res['success'] == true) {
+        Get.snackbar('Success', res['message'] ?? 'Advertisement added');
+        urlController.clear();
+        startDateController.clear();
+        endDateController.clear();
+        imageBytes = null;
+        await getAdvertisements();
       } else {
-        Get.snackbar("Error", "Upload failed");
+        Get.snackbar('Error', res['message'] ?? 'Upload failed');
       }
-
     } catch (e) {
       print(e);
-      Get.snackbar("Error", "Something went wrong");
-    }finally{
+      Get.snackbar('Error', e.toString().replaceFirst('Exception: ', ''));
+    } finally {
       loading();
       update();
     }

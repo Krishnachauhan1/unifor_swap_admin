@@ -55,8 +55,8 @@ class AdvertisementScreen extends StatelessWidget {
                           ),
 
                           child: isMobile
-                              ? _mobileCard(ad,controller)
-                              : _webCard(ad),
+                              ? _mobileCard(ad, controller, context)
+                              : _webCard(ad, controller, context),
                         );
                       },
                     ),
@@ -187,8 +187,47 @@ class AdvertisementScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _confirmAndDelete(
+    BuildContext context,
+    AdvertisementController controller,
+    String adId,
+  ) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete advertisement?'),
+          content: const Text('This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete == true) {
+      controller.deleteAdvertisement(adId);
+    }
+  }
+
   /// ================= MOBILE CARD =================
-  Widget _mobileCard(Map ad,AdvertisementController controller) {
+  Widget _mobileCard(
+    Map ad,
+    AdvertisementController controller,
+    BuildContext context,
+  ) {
+    final adId = (ad['id'] ?? '').toString();
+    final isDeleting = controller.deletingAdIds.contains(adId);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -215,16 +254,29 @@ class AdvertisementScreen extends StatelessWidget {
 
         Text("Start: ${ad['start_date'] ?? "-"}"),
         Text("End: ${ad['end_date'] ?? "-"}"),
-        ElevatedButton.icon(onPressed: (){
-          print(ad['id']);
-          controller.deleteAdvertisement(ad['id'].toString());
-        }, label: Text("Delete"),icon: Icon(Icons.delete_forever,color: Colors.red,),)
+        const SizedBox(height: 10),
+        ElevatedButton.icon(
+          onPressed: isDeleting || adId.isEmpty
+              ? null
+              : () => _confirmAndDelete(context, controller, adId),
+          label: Text(isDeleting ? "Deleting..." : "Delete"),
+          icon: const Icon(
+            Icons.delete_forever,
+            color: Colors.red,
+          ),
+        )
       ],
     );
   }
 
   /// ================= WEB CARD =================
-  Widget _webCard(Map ad) {
+  Widget _webCard(
+    Map ad,
+    AdvertisementController controller,
+    BuildContext context,
+  ) {
+    final adId = (ad['id'] ?? '').toString();
+    final isDeleting = controller.deletingAdIds.contains(adId);
     return Row(
       children: [
 
@@ -273,6 +325,24 @@ class AdvertisementScreen extends StatelessWidget {
           ),
           child: Text(ad['status'] ?? ""),
         )
+        ,
+        const SizedBox(width: 10),
+        IconButton(
+          tooltip: 'Delete',
+          onPressed: isDeleting || adId.isEmpty
+              ? null
+              : () => _confirmAndDelete(context, controller, adId),
+          icon: isDeleting
+              ? const SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                ),
+        ),
       ],
     );
   }
