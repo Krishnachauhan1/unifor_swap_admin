@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:uniform_swap_admin/app_colors.dart';
 import 'package:uniform_swap_admin/categories/controllers/category_controller.dart';
 import 'package:uniform_swap_admin/dashboard/dashboard_controller.dart';
+import 'package:uniform_swap_admin/schools/views/register_school_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -172,7 +173,8 @@ class HomeView extends StatelessWidget {
                   _QuickAction(
                       icon: Icons.add_business,
                       label: 'Add School',
-                      color: AppColors.secondary),
+                      color: AppColors.secondary,
+                      onTap: openRegisterSchoolForm),
                   _QuickAction(
                       icon: Icons.category,
                       label: 'Add Category',
@@ -416,8 +418,14 @@ class _QuickAction extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _QuickAction(
-      {required this.icon, required this.label, required this.color});
+  final VoidCallback? onTap;
+
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.color,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -427,7 +435,7 @@ class _QuickAction extends StatelessWidget {
       elevation: 1,
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
-        onTap: () {},
+        onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           child: Row(

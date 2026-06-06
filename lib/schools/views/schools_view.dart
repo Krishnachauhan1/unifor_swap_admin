@@ -44,7 +44,7 @@ class SchoolsView extends StatelessWidget {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: () => Get.to(() => const RegisterSchoolView()),
+                              onPressed: openRegisterSchoolForm,
                               icon: const Icon(Icons.add, size: 18),
                               label: const Text('Register School'),
                               style: ElevatedButton.styleFrom(
@@ -74,7 +74,7 @@ class SchoolsView extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           ElevatedButton.icon(
-                            onPressed: () => Get.to(() => const RegisterSchoolView()),
+                            onPressed: openRegisterSchoolForm,
                             icon: const Icon(Icons.add, size: 18),
                             label: const Text('Register School'),
                             style: ElevatedButton.styleFrom(
@@ -112,7 +112,7 @@ class SchoolsView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
-                        onPressed: () => Get.to(() => const RegisterSchoolView()),
+                        onPressed: openRegisterSchoolForm,
                         icon: const Icon(Icons.add, size: 18),
                         label: const Text('Register First School'),
                         style: ElevatedButton.styleFrom(
